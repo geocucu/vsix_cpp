@@ -1,0 +1,24 @@
+﻿[$RootKey$\Packages\{d6cbff0b-ce7e-4205-9e41-869492cfb46e}]
+@="vsix_cpp Package"
+"InprocServer32"="$PackageFolder$\vsix_cpp.dll"
+"CompanyName"="geocucu"
+"ProductName"="vsix_cpp"
+"ProductVersion"="1.0"
+
+[$RootKey$\Packages\{d6cbff0b-ce7e-4205-9e41-869492cfb46e}\SatelliteDll]
+"DllName"="vsct.dll"
+"Path"="$PackageFolder$"
+
+[$RootKey$\Menus]
+"{d6cbff0b-ce7e-4205-9e41-869492cfb46e}"=", 1000, 1"
+
+[$RootKey$\InstalledProducts\vsix_cpp]
+@="#100"
+"Package"="{d6cbff0b-ce7e-4205-9e41-869492cfb46e}"
+"ProductDetails"="#102"
+"LogoID"="#400"
+"PID"="1.0"
+"UseInterface"=dword:00000000
+
+
+

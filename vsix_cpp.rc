@@ -1,0 +1,58 @@
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+#include "winres.h"
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "1 TYPELIB ""vsix_cpp.tlb""\r\n"
+    "#define VER_FILEDESCRIPTION_STR ""vsix_cpp Package\\0""\r\n"
+    "#define VER_INTERNALNAME_STR ""vsix_cpp.dll\\0""\r\n"
+    "#define VER_ORIGINALFILENAME_STR ""vsix_cpp.dll\\0""\r\n"
+    "#define VER_LANGUAGENEUTRAL\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+IDB_IMAGES              PNG                     "images.png"
+IDI_PACKAGE_ICON        ICON                    "package.ico"
+STRINGTABLE
+BEGIN
+    IDS_PROJNAME            "vsix_cpp"
+END
+
+#endif    // English (United States) resources
+
+
+
+#ifndef APSTUDIO_INVOKED
+1 TYPELIB "vsix_cpp.tlb"
+#define VER_FILEDESCRIPTION_STR "vsix_cpp Package\0"
+#define VER_INTERNALNAME_STR "vsix_cpp.dll\0"
+#define VER_ORIGINALFILENAME_STR "vsix_cpp.dll\0"
+#define VER_LANGUAGENEUTRAL
+#endif    // not APSTUDIO_INVOKED
+

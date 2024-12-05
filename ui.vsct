@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<!-- ================ PREPROCESSOR ================ -->
+  
+<!-- ======== BUILT-IN ======== -->
+<!-- Commands IDs exposed by Visual Studio. -->
+<Extern href="stdidcmd.h"/>
+<!-- Menus provided by the shell. -->
+<Extern href="vsshlids.h"/>
+  
+<!-- ======== USER-DEFINED ======== -->
+<!-- Resource/Command IDs. -->
+<Extern href="resource.h"/>
+<!-- GUIDs. -->
+<Extern href="guids.h"/>
+
+<!-- ================ COMMANDS ================ -->
+<Commands package="guid_pkg"> 
+  <Groups>
+    <Group guid="guid_cmdset" id="MyMenuGroup" priority="0x0600">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
+    </Group>
+  </Groups>
+
+  <Buttons>
+    <Button guid="guid_cmdset" id="cmdidtest" priority="0x0100" type="Button">
+      <Parent guid="guid_cmdset" id="MyMenuGroup" />
+      <Icon guid="guid_img" id="bmpPic1" />
+      <Strings>
+        <ButtonText>Say hello</ButtonText>
+      </Strings>
+    </Button>
+  </Buttons>
+
+  <Bitmaps>
+    <Bitmap guid="guid_img" href="images.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows"/>
+  </Bitmaps>
+</Commands>
+
+</CommandTable>

@@ -1,0 +1,34 @@
+﻿import "oaidl.idl";
+import "ocidl.idl";
+midl_pragma warning (disable : 2015)
+import "vsshell.idl";
+midl_pragma warning (default : 2015)
+
+//standard dispids
+#define DISPID_Name                     (-800)
+#define DISPID_Delete                   (-801)
+#define DISPID_Object                   (-802)
+#define DISPID_Parent                   (-803)
+#define DISPID_NewEnum					(-4)
+#define DISPID_Value					(0)
+
+[
+	uuid(4b55dd76-7653-40e5-ad65-702e1626b258),
+	version(1.0),
+	helpstring("vsix_cpp 1.0 Type Library")
+]
+library vsix_cpp_lib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+
+	[
+		uuid(d6cbff0b-ce7e-4205-9e41-869492cfb46e),
+		helpstring("vsix_cpp Package")
+	]
+	coclass vsix_cpp_pkg
+	{
+		[default] interface IVsPackage;
+	};
+};
