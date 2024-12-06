@@ -1,0 +1,6 @@
+STRINGTABLE
+BEGIN
+  100                        "vsix_cpp"
+END
+
+1000               CTMENU    "ui.cto"

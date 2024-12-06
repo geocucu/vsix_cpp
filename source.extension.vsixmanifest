@@ -4,7 +4,7 @@
         <Identity Id="d6cbff0b-ce7e-4205-9e41-869492cfb46e" Version="1.0" Language="en-US" Publisher="geocucu" />
         <DisplayName>vsix_cpp</DisplayName>
         <Description xml:space="preserve">Boilerplate for C++ based Visual Studio extensions.</Description>
-        <Icon>package.ico</Icon>
+        <Icon>res\package.ico</Icon>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,18.0)">

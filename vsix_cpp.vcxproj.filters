@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <!-- ================ FILTERS ================ -->
   <ItemGroup>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
@@ -13,42 +15,32 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx;pkgdef;pkgundef;vsixmanifest</Extensions>
     </Filter>
-    <ClInclude Include="guids.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClCompile Include="module.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <Midl Include="vsix_cpp.idl">
-      <Filter>Source Files</Filter>
-    </Midl>
-    <None Include="vsix_cpp.def">
-      <Filter>Source Files</Filter>
-    </None>
-    <PkgdefFile Include="vsix_cpp.pkgdef">
-      <Filter>Source Files</Filter>
-    </PkgdefFile>
-    <ResourceCompile Include="vsix_cpp.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-    <Image Include="images.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="package.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
+
+  <!-- ================ FILES ================ -->
   <ItemGroup>
-    <ResourceCompile Include="vsct.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
+    <ClInclude Include="res\guids.h">    <Filter>Header Files</Filter> </ClInclude>
+    <ClInclude Include="res\resource.h"> <Filter>Header Files</Filter> </ClInclude>
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="ui.vsct">
-      <Filter>Resource Files</Filter>
-    </None>
+    <ClCompile Include="src\module.cpp"> <Filter>Source Files</Filter> </ClCompile>
+
+    <Midl Include="vsix_cpp.idl"> <Filter>Source Files</Filter> </Midl>
+
+    <PkgdefFile Include="vsix_cpp.pkgdef"> <Filter>Source Files</Filter> </PkgdefFile>
+
+    <None Include="vsix_cpp.def"> <Filter>Source Files</Filter> </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <ResourceCompile Include="res\vsix_cpp.rc"> <Filter>Resource Files</Filter> </ResourceCompile>
+
+    <Image Include="res\images.png">  <Filter>Resource Files</Filter> </Image>
+    <Image Include="res\package.ico"> <Filter>Resource Files</Filter> </Image>
+
+    <None Include="res\vsct.rc"> <Filter>Resource Files</Filter> </None>
+    <None Include="res\ui.vsct"> <Filter>Resource Files</Filter> </None>
+  </ItemGroup>
+
 </Project>

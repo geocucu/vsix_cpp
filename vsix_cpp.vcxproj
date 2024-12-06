@@ -143,17 +143,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Midl Include="vsix_cpp.idl" />
-    <ClCompile Include="module.cpp" />
-    <None Include="ui.vsct" />
-    <None Include="vsct.rc" />
+    <None Include="res\ui.vsct" />
+    <None Include="res\vsct.rc" />
     <None Include="vsix_cpp.def" />
-    <ClInclude Include="guids.h" />
-    <ClInclude Include="resource.h" />
-    <ResourceCompile Include="vsix_cpp.rc" />
+    <ResourceCompile Include="res\vsix_cpp.rc" />
     <PkgdefFile Include="vsix_cpp.pkgdef" />
-    <Image Include="images.png" />
-    <Image Include="package.ico" />
+    <Image Include="res\images.png" />
+    <Image Include="res\package.ico" />
+    <Midl Include="vsix_cpp.idl" />
+    <ClInclude Include="res\guids.h" />
+    <ClInclude Include="res\resource.h" />
+    <ClCompile Include="src\module.cpp" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v17.0\VSSDK\Microsoft.VsSDK.Cpp.targets" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
@@ -163,10 +163,10 @@
   <Target Name="BuildVsctResources" AfterTargets="Build">
     <!-- .VSCT -> .CTO -->
     <!-- <Exec Command="&quot;$(VsctPath)\vsct.exe&quot; &quot;$(ProjectDir)ui.vsct&quot; &quot;$(IntDir)ui.cto&quot; -v -I&quot;$(VsctPath)..\..\Common\Inc&quot;" /> -->
-    <Exec Command="&quot;$(VsctPath)\vsct.exe&quot; &quot;$(ProjectDir)ui.vsct&quot; &quot;$(IntDir)ui.cto&quot; -v -I&quot;C:\Program Files\Microsoft Visual Studio\2022\Community\VSSDK\VisualStudioIntegration\Common\Inc&quot;" />
+    <Exec Command="&quot;$(VsctPath)\vsct.exe&quot; &quot;$(ProjectDir)res\ui.vsct&quot; &quot;$(IntDir)ui.cto&quot; -v -I&quot;C:\Program Files\Microsoft Visual Studio\2022\Community\VSSDK\VisualStudioIntegration\Common\Inc&quot;" />
     <!-- .CTO -> .RC -> .RES -->
-    <Message Text="Executing: rc /nologo /v /i &quot;$(IntDir)\&quot; /fo &quot;$(IntDir)vsct.res&quot; &quot;$(ProjectDir)vsct.rc&quot;" Importance="High" />
-    <Exec Command="rc /nologo /v /i &quot;$(IntDir)\&quot; /fo &quot;$(IntDir)vsct.res&quot; &quot;$(ProjectDir)vsct.rc&quot;" />
+    <Message Text="Executing: rc /nologo /v /i &quot;$(IntDir)\&quot; /fo &quot;$(IntDir)vsct.res&quot; &quot;$(ProjectDir)res\vsct.rc&quot;" Importance="High" />
+    <Exec Command="rc /nologo /v /i &quot;$(IntDir)\&quot; /fo &quot;$(IntDir)vsct.res&quot; &quot;$(ProjectDir)res\vsct.rc&quot;" />
     <!-- .RES -> .DLL -->
     <Message Text="Executing: link /NOLOGO /NOENTRY /DLL /OUT:&quot;$(OutDir)vsct.dll&quot; &quot;$(IntDir)vsct.res&quot;" Importance="High" />
     <Exec Command="link /NOLOGO /NOENTRY /DLL /OUT:&quot;$(OutDir)vsct.dll&quot; &quot;$(IntDir)vsct.res&quot;" />

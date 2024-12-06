@@ -4,7 +4,7 @@
 // Bake GUIDs
 #define INITGUID
 #include <guiddef.h>
-#include "Guids.h"
+#include "..\res\guids.h"
 #undef INITGUID
 #include <VSShellInterfaces.h>
 
@@ -52,7 +52,7 @@
 #include <VSLShortNameDefines.h>
 
 // ======== GUIDs/IDs ======== 
-#include "resource.h"
+#include "..\res\resource.h"
 
 
 struct __declspec(novtable) pkg_t : 
