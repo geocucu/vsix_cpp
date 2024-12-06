@@ -28,7 +28,7 @@
       <Parent guid="guid_cmdset" id="MyMenuGroup" />
       <Icon guid="guid_img" id="bmpPic1" />
       <Strings>
-        <ButtonText>Say hello</ButtonText>
+        <ButtonText>Click me 2</ButtonText>
       </Strings>
     </Button>
   </Buttons>

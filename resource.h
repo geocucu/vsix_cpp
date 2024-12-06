@@ -17,8 +17,3 @@
 #define bmpPicStrikethrough 6
 
 #endif
-
-#define IDS_PROJNAME                    100
-#define IDB_IMAGES                      103
-#define IDI_PACKAGE_ICON                400
-

@@ -55,19 +55,16 @@
       <IncludeOutputGroupsInVSIXLocalOnly> DebugSymbolsProjectOutputGroup; </IncludeOutputGroupsInVSIXLocalOnly>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="vsct.vcxproj">
-      <Project>{534be5d1-c88d-4949-8a01-233ce6fe6739}</Project>
-      <Name>vsct</Name>
-      <VSIXSubPath>1033</VSIXSubPath>
-      <IncludeOutputGroupsInVSIX> BuiltProjectOutputGroup; </IncludeOutputGroupsInVSIX>
-      <IncludeOutputGroupsInVSIXLocalOnly> DebugSymbolsProjectOutputGroup; </IncludeOutputGroupsInVSIXLocalOnly>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="package.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="$(SolutionDir)bin\vsix_cpp\$(Configuration)\vsct.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Link>1033\vsct.dll</Link>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

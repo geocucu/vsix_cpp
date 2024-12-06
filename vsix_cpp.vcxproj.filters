@@ -13,14 +13,12 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx;pkgdef;pkgundef;vsixmanifest</Extensions>
     </Filter>
-    
     <ClInclude Include="guids.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-
     <ClCompile Include="module.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -33,7 +31,6 @@
     <PkgdefFile Include="vsix_cpp.pkgdef">
       <Filter>Source Files</Filter>
     </PkgdefFile>
-
     <ResourceCompile Include="vsix_cpp.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
@@ -43,5 +40,15 @@
     <Image Include="package.ico">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="vsct.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ui.vsct">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

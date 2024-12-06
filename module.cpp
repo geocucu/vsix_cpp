@@ -53,7 +53,6 @@
 
 // ======== GUIDs/IDs ======== 
 #include "resource.h"
-#include "vsct_resource.h"
 
 
 struct __declspec(novtable) pkg_t : 
@@ -108,8 +107,8 @@ public:
 		if (!bInitialized) {
 			commands.InitHashTable(iNumberOfBins, false);
 			static CommandHandler cmdset_cmdidtest_handler(
-				CLSID_cmdset,
-				0x100,
+				CLSID_cmdset,  // cmdset GUID 
+				cmdidtest,     // cmd      ID 
 				static_cast<CommandHandler::QueryStatusHandler>(0),
 				static_cast<CommandHandler::ExecHandler>(CommandHandler::ExecHandler(&OnMyCommand)));
 			commands[cmdset_cmdidtest_handler.GetId()] = &cmdset_cmdidtest_handler;
