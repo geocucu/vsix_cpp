@@ -61,9 +61,9 @@ $projname_replacement_files = @(
 )
 
 $subdirs = @(
-  (Get-Location).Path,
-  (Join-Path -Path (Get-Location).Path -ChildPath "res"),
-  (Join-Path -Path (Get-Location).Path -ChildPath "src")
+  (Get-Location).Path,  # Working dir
+  (Join-Path -Path (Get-Location).Path -ChildPath "src"),  # src/ and subdirs
+  (Join-Path -Path (Get-Location).Path -ChildPath "res")   # res/ and subdirs
 )
 
 # == GUID replacements == 
@@ -81,6 +81,8 @@ foreach ($key in $guid_replacements.Keys) {
   }
 }
 
+Write-Host "GUID replacements done..."
+
 # == Proj name replacements ==
 foreach ($file in $projname_replacement_files) {
   if (Test-Path $file) {
@@ -90,13 +92,16 @@ foreach ($file in $projname_replacement_files) {
   }
 }
 
-# == Rename files == 
+Write-Host "Project name replacements done..."
+
+# == Rename files ==
 foreach ($dir in $subdirs) {
   if (Test-Path $dir) {
     Get-ChildItem -Path $dir -Recurse -File | Where-Object {
-      $_.Name -match $boilerplate_name
+      # Match only the file name, not the full path
+      $_.Name -match [regex]::Escape($boilerplate_name)
     } | ForEach-Object {
-      $new_name = $_.FullName -replace [regex]::Escape($boilerplate_name), $new_proj_name
+      $new_name = Join-Path -Path $_.DirectoryName -ChildPath ($_.Name -replace [regex]::Escape($boilerplate_name), $new_proj_name)
       Rename-Item -Path $_.FullName -NewName $new_name
     }
   }
