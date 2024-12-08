@@ -3,7 +3,7 @@
 
 
 // Menu groups 
-#define MyMenuGroup 0x1020
+#define test_menu_group 0x1020
 
 // Commands 
 #define CMDID_test_btn 0x100

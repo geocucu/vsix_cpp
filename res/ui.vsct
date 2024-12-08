@@ -18,17 +18,17 @@
 <!-- ================ COMMANDS ================ -->
 <Commands package="GUID_pkg"> 
   <Groups>
-    <Group guid="GUID_cmdset" id="MyMenuGroup" priority="0x0600">
+    <Group guid="GUID_cmdset" id="test_menu_group" priority="0x0600">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
     </Group>
   </Groups>
 
   <Buttons>
     <Button guid="GUID_cmdset" id="CMDID_test_btn" priority="0x0100" type="Button">
-      <Parent guid="GUID_cmdset" id="MyMenuGroup" />
+      <Parent guid="GUID_cmdset" id="test_menu_group" />
       <Icon guid="GUID_img" id="bmpPic1" />
       <Strings>
-        <ButtonText>Click me 4321</ButtonText>
+        <ButtonText>Click me</ButtonText>
       </Strings>
     </Button>
   </Buttons>
