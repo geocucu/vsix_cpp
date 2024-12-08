@@ -16,17 +16,17 @@
 <Extern href="guids.h"/>
 
 <!-- ================ COMMANDS ================ -->
-<Commands package="guid_pkg"> 
+<Commands package="GUID_pkg"> 
   <Groups>
-    <Group guid="guid_cmdset" id="MyMenuGroup" priority="0x0600">
+    <Group guid="GUID_cmdset" id="MyMenuGroup" priority="0x0600">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
     </Group>
   </Groups>
 
   <Buttons>
-    <Button guid="guid_cmdset" id="cmdidtest" priority="0x0100" type="Button">
-      <Parent guid="guid_cmdset" id="MyMenuGroup" />
-      <Icon guid="guid_img" id="bmpPic1" />
+    <Button guid="GUID_cmdset" id="CMDID_test_btn" priority="0x0100" type="Button">
+      <Parent guid="GUID_cmdset" id="MyMenuGroup" />
+      <Icon guid="GUID_img" id="bmpPic1" />
       <Strings>
         <ButtonText>Click me 4321</ButtonText>
       </Strings>
@@ -34,7 +34,7 @@
   </Buttons>
 
   <Bitmaps>
-    <Bitmap guid="guid_img" href="images.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows"/>
+    <Bitmap guid="GUID_img" href="images.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows"/>
   </Bitmaps>
 </Commands>
 

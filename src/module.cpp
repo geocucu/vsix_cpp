@@ -55,85 +55,114 @@
 #include "..\res\resource.h"
 
 
-struct __declspec(novtable) pkg_t : 
-  // Non-thread safe COM object, partial IUnknown implementation.
-  CComObjectRootEx<CComSingleThreadModel>, CComCoClass<pkg_t, &CLSID_pkg>,
-  // Make this COM object into a VS package.
-  VSL::IVsPackageImpl<pkg_t, &CLSID_pkg>, VSL::IOleCommandTargetImpl<pkg_t>,
-  // Consumers of this object can determine which interfaces support extended error information.
-  ATL::ISupportErrorInfoImpl<&__uuidof(IVsPackage)> 
+typedef unsigned long long u64;
+typedef long long i64;
+
+struct __declspec(novtable) pkg_t :
+	// Non-thread safe COM object; partial implementation for IUnknown (the COM map below provides the rest).
+	CComObjectRootEx<CComSingleThreadModel>,
+	CComCoClass<pkg_t, &CLSID_pkg>,
+	// Implement IVsPackage => make this COM object into a VS Package.
+	VSL::IVsPackageImpl<pkg_t, &CLSID_pkg>,
+	VSL::IOleCommandTargetImpl<pkg_t>,
+	// Provides consumers of this object with the ability to determine which interfaces support extended error information.
+	ATL::ISupportErrorInfoImpl<&IID_IVsPackage>
 {
-public:
-	pkg_t() = default;
-	~pkg_t() = default;
-
-	HRESULT _InternalQueryInterface(const IID &iid, void **obj) throw() {
-		return this->InternalQueryInterface(this, _GetEntries(), iid, obj);
+	// ==== Start of COM map ==== 
+	// Provides a portion of the implementation of IUnknown, in particular the list of interfaces the pkg_t object will support via QueryInterface
+	
+	//BEGIN_COM_MAP(pkg_t)
+	typedef pkg_t _ComMapClass; 
+	static HRESULT __stdcall _Cache(void *pv, const IID &iid, void **ppvObject, u64 dw) {
+		pkg_t *p = (pkg_t *)pv;
+		p->Lock(); 
+		HRESULT hr = E_FAIL; 
+		__try {
+			hr = ATL::CComObjectRootBase::_Cache(pv, iid, ppvObject, dw);
+		}
+		__finally {
+			p->Unlock();
+		} 
+		return hr;
 	} 
+	
+	IUnknown *_GetRawUnknown() {
+		return (IUnknown *)((i64)this + _GetEntries()->dw);
+	} 
+	
+	IUnknown *GetUnknown() {
+		return (IUnknown *)((i64)this + _GetEntries()->dw);
+	} 
+	
+	HRESULT _InternalQueryInterface(const IID &iid, void **ppvObject) {
+		return this->InternalQueryInterface(this, _GetEntries(), iid, ppvObject);
+	} 
+	
+	static const ATL::_ATL_INTMAP_ENTRY* _GetEntries() {
+		static pkg_t *addr_8 = (pkg_t *)8; // Fake non-null addr for adjusting pointers by base interfaces (within the derived pkg_t)
+		static u64 dw_IVsPackage        = u64((IVsPackage *)       addr_8) - 8; // Offset of vfptr for IVsPackage
+		static u64 dw_IOleCommandTarget = u64((IOleCommandTarget *)addr_8) - 8; // Offset of vfptr for IOleCommandTarget
+		static u64 dw_ISupportErrorInfo = u64((ISupportErrorInfo *)addr_8) - 8; // Offset of vfptr for ISupportErrorInfo
+		static _ATL_CREATORARGFUNC *func = (ATL::_ATL_CREATORARGFUNC *)1; // Sentinel?
 
-	const static ATL::_ATL_INTMAP_ENTRY *__stdcall _GetEntries() throw() {
-		static const ATL::_ATL_INTMAP_ENTRY _entries[] = { 
-			{ 0, (DWORD_PTR)L"pkg_t", (ATL::_ATL_CREATORARGFUNC *)0 },
-		  { &__uuidof(IVsPackage), ((DWORD_PTR)(static_cast<IVsPackage *>((pkg_t *)8)) - 8), ((ATL::_ATL_CREATORARGFUNC *)1) },
-			{ &__uuidof(IOleCommandTarget), ((DWORD_PTR)(static_cast<IOleCommandTarget *>((pkg_t *)8)) - 8), ((ATL::_ATL_CREATORARGFUNC *)1) },
-			{ &__uuidof(ISupportErrorInfo), ((DWORD_PTR)(static_cast<ISupportErrorInfo *>((pkg_t *)8)) - 8), ((ATL::_ATL_CREATORARGFUNC *)1) },
-			__if_exists(_GetAttrEntries) { { 0, (DWORD_PTR)_GetAttrEntries, _ChainAttr }, } { 0, 0, 0 } 
+		static const ATL::_ATL_INTMAP_ENTRY _entries[] = {
+			//COM_INTERFACE_ENTRY(IVsPackage)
+			{ &IID_IVsPackage, dw_IVsPackage, func },
+		
+			//COM_INTERFACE_ENTRY(IOleCommandTarget)
+			{ &IID_IOleCommandTarget, dw_IOleCommandTarget, func },
+		
+			//COM_INTERFACE_ENTRY(ISupportErrorInfo)
+			{ &IID_ISupportErrorInfo, dw_ISupportErrorInfo, func },
+
+			//END_COM_MAP()
+__if_exists(_GetAttrEntries) { 
+			{ 0, (u64)_GetAttrEntries, _ChainAttr }, } 
+
+			{ 0, 0, 0 } 
 		}; 
-
-		return &_entries[1];
+		
+		return _entries;
 	} 
+	
+	virtual ULONG __stdcall AddRef() = 0; 
+	virtual ULONG __stdcall Release() = 0; 
+	virtual __declspec(nothrow) HRESULT __stdcall QueryInterface(const IID &, void **) = 0;
 
-	// Get error info if the UI DLL can't be loaded. 
+	// ==== End of COM map === 
+
+	// Provide error information if it is not possible to load the UI dll. 
 	static const LoadUILibrary::ExtendedErrorInfo &GetLoadUILibraryErrorInfo() {
-		static LoadUILibrary::ExtendedErrorInfo info(L"The product is not installed properly. Please reinstall.");
-		return info;
+		static LoadUILibrary::ExtendedErrorInfo errorInfo(L"The product is not installed properly. Please reinstall.");
+		return errorInfo;
 	}
 
 	// DLL is registered with VS via a pkgdef file. Don't do anything if asked to self-register.
-	static HRESULT UpdateRegistry(BOOL bRegister) {
-		return S_OK;
+	static HRESULT UpdateRegistry(BOOL bRegister) { return S_OK; }
+
+	// ================================ Interesting non-boilerplate START ================================
+
+	static CommandHandler *GetCommand(const VSL::CommandId &target_id) {
+		// Command map specific to this package
+		// Combined command id: cmdset GUID & ID within cmdset
+		static VSL::CommandId id_test_btn(CLSID_cmdset, CMDID_test_btn);
+		static CommandHandler test_btn_handler(id_test_btn, 0, &on_test_btn);
+
+		if (target_id == id_test_btn) {
+			return &test_btn_handler;
+		}
+
+		return 0;
 	}
 
-	// NOTE - the arguments passed to these macros can not have names longer then 30 characters
-	// Definition of the commands handled by this package
-	static CommandHandler *GetCommand(const VSL::CommandId &rId) {
-		UINT iNumberOfBins = 17;
-		__if_exists(CAtlMapNumberOfBins) {
-			iNumberOfBins = CAtlMapNumberOfBins;
-		}
-		typedef CAtlMap<const VSL::CommandId, CommandHandler *> CommandMap;
-		static CommandMap commands;
-		static bool bInitialized = false;
-		if (!bInitialized) {
-			commands.InitHashTable(iNumberOfBins, false);
-			static CommandHandler cmdset_cmdidtest_handler(
-				CLSID_cmdset,  // cmdset GUID 
-				cmdidtest,     // cmd      ID 
-				static_cast<CommandHandler::QueryStatusHandler>(0),
-				static_cast<CommandHandler::ExecHandler>(CommandHandler::ExecHandler(&OnMyCommand)));
-			commands[cmdset_cmdidtest_handler.GetId()] = &cmdset_cmdidtest_handler;
-			bInitialized = true;
-		};
-		CommandMap::CPair *pair = commands.Lookup(rId);
-		if (0 == pair) {
-			return 0;
-		}
-		return pair->m_value;
-	}
-
-	// Command handler called when the user selects the "My Command" command.
-	void OnMyCommand(CommandHandler * /*pSender*/, DWORD /*flags*/, VARIANT * /*pIn*/, VARIANT * /*pOut*/) {
-		// Get the string for the title of the message box from the resource dll.
-		CComBSTR bstrTitle;
-		VSL::FailOnError<VSL::BOOLGetLastErrorTraits >::Invoke(bstrTitle.LoadStringW(_AtlBaseModule.GetResourceInstance(), 100));
-		// Get a pointer to the UI Shell service to show the message box.
-		CComPtr<IVsUIShell> vs_ui_shell = this->GetVsSiteCache().GetCachedService<IVsUIShell, IID_IVsUIShell>();
+	void on_test_btn(CommandHandler *sender, DWORD flags, VARIANT *in, VARIANT *out) {
+		CComPtr<IVsUIShell> spUiShell = this->GetVsSiteCache().GetCachedService<IVsUIShell, IID_IVsUIShell>();
 		LONG lResult;
-		HRESULT hr = vs_ui_shell->ShowMessageBox(
+		HRESULT hr = spUiShell->ShowMessageBox(
 			0,
 			GUID_NULL,
-			bstrTitle,
-			W2OLE(L"Hallo"),
+			L"vsix_cpp",
+			L"Heelo 3",
 			0,
 			0,
 			OLEMSGBUTTON_OK,
@@ -141,26 +170,17 @@ public:
 			OLEMSGICON_INFO,
 			0,
 			&lResult);
-		VSL::FailOnError<VSL::HRESULTTraits>::Invoke(hr);
+
+		// VSL::FailOnError<VSL::HRESULTTraits>::Invoke(hr);
 	}
+
+	// ================================ Interesting non-boilerplate END ================================
 };
 
 // This exposes pkg_t for instantiation via DllGetClassObject; however, an instance
 // can not be created by CoCreateInstance, as pkg_t is specifically registered with
 // VS, not the the system in general.
-__declspec(selectany) ATL::_ATL_OBJMAP_CACHE __objCache__pkg_t = { 0, 0 };
-const ATL::_ATL_OBJMAP_ENTRY_EX __objMap_pkg_t = {
-	&CLSID_pkg, 
-	pkg_t::UpdateRegistry,
-	pkg_t::_ClassFactoryCreatorClass::CreateInstance,
-	pkg_t::_CreatorClass::CreateInstance,
-	&__objCache__pkg_t,
-	pkg_t::GetObjectDescription,
-	pkg_t::GetCategoryMap,
-	pkg_t::ObjectMain };
-extern "C" __declspec(allocate("ATL$__m")) __declspec(selectany) 
-const ATL::_ATL_OBJMAP_ENTRY_EX *const __pobjMap_pkg_t = &__objMap_pkg_t;
-__pragma(comment(linker, "/include:__pobjMap_" "pkg_t"));
+OBJECT_ENTRY_AUTO(CLSID_pkg, pkg_t)
 
 // Should be instantiated before the point where DllGetClassObject(factory...) goes through 
 struct dll_module_t : CAtlDllModuleT<dll_module_t> {} dll_module;

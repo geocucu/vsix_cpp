@@ -6,7 +6,7 @@
 #define MyMenuGroup 0x1020
 
 // Commands 
-#define cmdidtest 0x100
+#define CMDID_test_btn 0x100
 
 // Bitmaps 
 #define bmpPic1 1
