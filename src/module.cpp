@@ -105,7 +105,7 @@ struct __declspec(novtable) pkg_t :
 		static u64 dw_ISupportErrorInfo = u64((ISupportErrorInfo *)addr_8) - 8; // Offset of vfptr for ISupportErrorInfo
 		static _ATL_CREATORARGFUNC *func = (ATL::_ATL_CREATORARGFUNC *)1; // Sentinel?
 
-		static const ATL::_ATL_INTMAP_ENTRY _entries[] = {
+		static const ATL::_ATL_INTMAP_ENTRY entries[] = {
 			//COM_INTERFACE_ENTRY(IVsPackage)
 			{ &IID_IVsPackage, dw_IVsPackage, func },
 		
@@ -122,7 +122,8 @@ __if_exists(_GetAttrEntries) {
 			{ 0, 0, 0 } 
 		}; 
 		
-		return _entries;
+		// Return &entries[1] instead, if the map contains { 0, (DWORD_PTR)L"pkg_t", 0 } as the first elem.
+		return entries;
 	} 
 	
 	virtual ULONG __stdcall AddRef() = 0; 
@@ -133,8 +134,8 @@ __if_exists(_GetAttrEntries) {
 
 	// Provide error information if it is not possible to load the UI dll. 
 	static const LoadUILibrary::ExtendedErrorInfo &GetLoadUILibraryErrorInfo() {
-		static LoadUILibrary::ExtendedErrorInfo errorInfo(L"The product is not installed properly. Please reinstall.");
-		return errorInfo;
+		static LoadUILibrary::ExtendedErrorInfo info(L"The product is not installed properly. Please reinstall.");
+		return info;
 	}
 
 	// DLL is registered with VS via a pkgdef file. Don't do anything if asked to self-register.
@@ -156,13 +157,13 @@ __if_exists(_GetAttrEntries) {
 	}
 
 	void on_test_btn(CommandHandler *sender, DWORD flags, VARIANT *in, VARIANT *out) {
-		CComPtr<IVsUIShell> spUiShell = this->GetVsSiteCache().GetCachedService<IVsUIShell, IID_IVsUIShell>();
+		CComPtr<IVsUIShell> vs_ui_shell = this->GetVsSiteCache().GetCachedService<IVsUIShell, IID_IVsUIShell>();
 		LONG lResult;
-		HRESULT hr = spUiShell->ShowMessageBox(
+		HRESULT hr = vs_ui_shell->ShowMessageBox(
 			0,
 			GUID_NULL,
 			L"vsix_cpp",
-			L"Heelo 3",
+			L"Hello",
 			0,
 			0,
 			OLEMSGBUTTON_OK,
@@ -212,40 +213,46 @@ extern "C" HRESULT DllGetClassObject(const IID &rclsid, const IID &riid, void **
 
 	HRESULT hr = S_OK;
 
-	for (_ATL_OBJMAP_ENTRY_EX **ppEntry = _AtlComModule.m_ppAutoObjMapFirst; ppEntry < _AtlComModule.m_ppAutoObjMapLast; ppEntry++) {
-		if (*ppEntry != NULL) {
-			const _ATL_OBJMAP_ENTRY_EX *pEntry = *ppEntry;
+	for (_ATL_OBJMAP_ENTRY_EX **iter = _AtlComModule.m_ppAutoObjMapFirst; iter < _AtlComModule.m_ppAutoObjMapLast; iter++) {
+		if (*iter == 0) {
+			continue;
+		}
 
-			if ((pEntry->pfnGetClassObject != NULL) && InlineIsEqualGUID(rclsid, *pEntry->pclsid)) {
-				_ATL_OBJMAP_CACHE *pCache = pEntry->pCache;
+		const _ATL_OBJMAP_ENTRY_EX *entry = *iter;
 
-				if (pCache->pCF == NULL) {
-					CComCritSecLock<CComCriticalSection> lock(_AtlComModule.m_csObjMap, false);
-					hr = lock.Lock();
-					if (FAILED(hr)) {
-						ATLTRACE(atlTraceCOM, 0, _T("ERROR : Unable to lock critical section in AtlComModuleGetClassObject\n"));
-						_ASSERTE(FALSE);
-						break;
-					}
+		if (!entry->pfnGetClassObject || !InlineIsEqualGUID(rclsid, *entry->pclsid)) {
+			continue;
+		}
 
-					if (pCache->pCF == NULL) {
-						IUnknown *factory = NULL;
-						hr = pEntry->pfnGetClassObject(pEntry->pfnCreateInstance, __uuidof(IUnknown), reinterpret_cast<void **>(&factory));
-						if (SUCCEEDED(hr))
-						{
-							pCache->pCF = reinterpret_cast<IUnknown *>(::EncodePointer(factory));
-						}
-					}
-				}
+		_ATL_OBJMAP_CACHE *cache = entry->pCache;
 
-				if (pCache->pCF != NULL) {
-					// Decode factory pointer
-					IUnknown *factory = reinterpret_cast<IUnknown *>(::DecodePointer(pCache->pCF));
-					hr = factory->QueryInterface(riid, ppv);
-				}
+		if (!cache->pCF) {
+			CComCritSecLock<CComCriticalSection> lock(_AtlComModule.m_csObjMap, false);
+			hr = lock.Lock();
+			if (FAILED(hr)) {
+				ATL::CTraceFileAndLineInfo(__FILE__, __LINE__)(atlTraceCOM, 0, L"ERROR : Unable to lock critical section in AtlComModuleGetClassObject\n");
+#ifdef _DEBUG
+				__debugbreak();
+#endif 
 				break;
 			}
+
+			if (!cache->pCF) {
+				IUnknown *factory = 0;
+				hr = entry->pfnGetClassObject(entry->pfnCreateInstance, IID_IUnknown, (void**)&factory);
+				if (SUCCEEDED(hr)) {
+					cache->pCF = (IUnknown*)EncodePointer(factory);
+				}
+			}
 		}
+
+		if (cache->pCF) {
+			// Decode factory pointer
+			IUnknown *factory = (IUnknown*)DecodePointer(cache->pCF);
+			hr = factory->QueryInterface(riid, ppv);
+		}
+
+		break;
 	}
 
 	if (*ppv == NULL && hr == S_OK) {
@@ -253,14 +260,6 @@ extern "C" HRESULT DllGetClassObject(const IID &rclsid, const IID &riid, void **
 	}
 
 	return hr;
-
-	//HRESULT hr = 0;
-	//try { return _AtlModule.GetClassObject(rclsid, riid, ppv); }
-	//catch (const VSL::ExceptionBase &e) { hr = vs_report_err(e); }
-	//catch (const std::exception &e) { hr = vs_report_err(e); }
-	//catch (const ATL::CAtlException &e) { hr = vs_report_err(e); }
-	//catch (...) { hr = E_UNEXPECTED; };
-	//return hr;
 }
 
 #pragma warning(pop)
