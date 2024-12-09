@@ -3,6 +3,8 @@ $new_proj_name = "gc_msvc_toolbar"
 
 $boilerplate_name = "vsix_cpp" 
 
+# C++ Project Type (Ignore): 8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942
+# C# Project Type (Ignore): FAE04EC0-301F-11D3-BF4B-00C04F79EFBC
 $guid_replacements = @{
   "GUID_pkg" = @{
     "old" = "d6cbff0b-ce7e-4205-9e41-869492cfb46e"
@@ -24,22 +26,12 @@ $guid_replacements = @{
     "new" = [guid]::NewGuid().ToString()
     "files" = @("vsix_cpp.idl")
   }
-  "GUID_sln_1" = @{
-    "old" = "8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942"
-    "new" = [guid]::NewGuid().ToString()
-    "files" = @("vsix_cpp.sln")
-  }
-  "GUID_sln_2" = @{
+  "GUID_cpp_proj" = @{
     "old" = "20DA4D05-A1D6-42AF-9731-82C9A888AB15"
     "new" = [guid]::NewGuid().ToString()
     "files" = @("vsix_cpp.sln", "vsix_cpp.vcxproj", "vsix.csproj")
   }
-  "GUID_sln_3" = @{
-    "old" = "FAE04EC0-301F-11D3-BF4B-00C04F79EFBC"
-    "new" = [guid]::NewGuid().ToString()
-    "files" = @("vsix_cpp.sln", "vsix.csproj")
-  }
-  "GUID_sln_4" = @{
+  "GUID_vsix_proj" = @{
     "old" = "99EF908D-86C3-40FC-AE94-3298B65481C5"
     "new" = [guid]::NewGuid().ToString()
     "files" = @("vsix_cpp.sln", "vsix.csproj")

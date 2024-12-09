@@ -230,10 +230,6 @@ extern "C" HRESULT DllGetClassObject(const IID &rclsid, const IID &riid, void **
 			CComCritSecLock<CComCriticalSection> lock(_AtlComModule.m_csObjMap, false);
 			hr = lock.Lock();
 			if (FAILED(hr)) {
-				ATL::CTraceFileAndLineInfo(__FILE__, __LINE__)(atlTraceCOM, 0, L"ERROR : Unable to lock critical section in AtlComModuleGetClassObject\n");
-#ifdef _DEBUG
-				__debugbreak();
-#endif 
 				break;
 			}
 
