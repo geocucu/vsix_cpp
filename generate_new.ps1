@@ -5,21 +5,65 @@ $boilerplate_name = "vsix_cpp"
 
 # C++ Project Type (Ignore): 8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942
 # C# Project Type (Ignore): FAE04EC0-301F-11D3-BF4B-00C04F79EFBC
+
+# ======== guids.h ========
+
+function generate_guidh_triplet {
+  param (
+    [string]$name
+  )
+
+  $new = [guid]::NewGuid()
+  $new_str = $new.ToString()
+  $parts = $new_str -split '-'
+
+  $new_define1 = @"
+GUID_$name { 0x$($parts[0]), 0x$($parts[1]), 0x$($parts[2]), { 0x$($parts[3][0..1] -join ''), 0x$($parts[3][2..3] -join ''), 0x$($parts[4][0..1] -join ''), 0x$($parts[4][2..3] -join ''), 0x$($parts[4][4..5] -join ''), 0x$($parts[4][6..7] -join ''), 0x$($parts[4][8..9] -join ''), 0x$($parts[4][10..11] -join '') } }
+"@
+
+  $new_define2 = @"
+DEFINE_GUID(CLSID_$name,
+0x$($parts[0]), 0x$($parts[1]), 0x$($parts[2]), 0x$($parts[3][0..1] -join ''), 0x$($parts[3][2..3] -join ''), 0x$($parts[4][0..1] -join ''), 0x$($parts[4][2..3] -join ''), 0x$($parts[4][4..5] -join ''), 0x$($parts[4][6..7] -join ''), 0x$($parts[4][8..9] -join ''), 0x$($parts[4][10..11] -join '') );
+"@
+
+  return @{
+    new           = $new_str
+    new_define1   = $new_define1
+    new_define2   = $new_define2
+  }
+}
+
+$guids_pkg = generate_guidh_triplet -name "pkg"
+$guids_cmdset = generate_guidh_triplet -name "cmdset"
+$guids_img = generate_guidh_triplet -name "img"
+
+Set-Content -Path "res/guids.h" -Value @"
+// { $($guids_pkg.new) }
+#define $($guids_pkg.new_define1)
+#ifdef DEFINE_GUID
+$($guids_pkg.new_define2)
+#endif 
+
+// { $($guids_cmdset.new) }
+#define $($guids_cmdset.new_define1)
+#ifdef DEFINE_GUID
+$($guids_cmdset.new_define2)
+#endif 
+
+// { $($guids_img.new) }
+#define $($guids_img.new_define1)
+#ifdef DEFINE_GUID
+$($guids_img.new_define2)
+#endif 
+"@
+
+# ======== Everything else ========
+
 $guid_replacements = @{
   "GUID_pkg" = @{
     "old" = "d6cbff0b-ce7e-4205-9e41-869492cfb46e"
-    "new" = [guid]::NewGuid().ToString()
-    "files" = @("source.extension.manifest", "vsix_cpp.idl", "vsix_cpp.pkgdef", "res/guids.h")
-  }
-  "GUID_cmdset" = @{
-    "old" = "4082e768-130c-49a3-b9f6-ec28d9aea2d5"
-    "new" = [guid]::NewGuid().ToString()
-    "files" = @("res/guids.h")
-  }
-  "GUID_img" = @{
-    "old" = "ed56039a-5fbe-47f5-bfe0-e347a9f30c18"
-    "new" = [guid]::NewGuid().ToString()
-    "files" = @("res/guids.h")
+    "new" = $guids_pkg.new
+    "files" = @("source.extension.manifest", "vsix_cpp.idl", "vsix_cpp.pkgdef")
   }
   "GUID_idl" = @{
     "old" = "4b55dd76-7653-40e5-ad65-702e1626b258"
@@ -86,6 +130,32 @@ foreach ($file in $projname_replacement_files) {
 
 Write-Host "Project name replacements done..."
 
+# == Clean up files that are not committed anyway (mostly for dev) ==
+
+# .user
+Get-ChildItem -Path $PWD -Recurse -File -Filter "*.user" | ForEach-Object {
+  try {
+    Remove-Item -Path $_.FullName -Force -ErrorAction Stop
+    Write-Host "Deleted: $($_.FullName)"
+  } catch {
+    Write-Host "Error deleting: $($_.FullName). Error: $($_.Exception.Message)" -ForegroundColor Red
+  }
+}
+
+# bin/
+$binDir = Join-Path -Path $PWD -ChildPath "bin"
+
+if (Test-Path $binDir) {
+  try {
+    Remove-Item -Path $binDir -Recurse -Force -ErrorAction Stop
+    Write-Host "Deleted: $binDir"
+  } catch {
+    Write-Host "Error deleting: $binDir. Error: $($_.Exception.Message)" -ForegroundColor Red
+  }
+}
+
+Write-Host "Cleaned up rubbish..."
+
 # == Rename files ==
 foreach ($dir in $subdirs) {
   if (Test-Path $dir) {
@@ -94,7 +164,13 @@ foreach ($dir in $subdirs) {
       $_.Name -match [regex]::Escape($boilerplate_name)
     } | ForEach-Object {
       $new_name = Join-Path -Path $_.DirectoryName -ChildPath ($_.Name -replace [regex]::Escape($boilerplate_name), $new_proj_name)
-      Rename-Item -Path $_.FullName -NewName $new_name
+
+      try {
+        Rename-Item -Path $_.FullName -NewName $new_name -ErrorAction Stop
+        Write-Host "Renamed: $($_.FullName) ---> $new_name"
+      } catch {
+        Write-Host "Error renaming file: $($_.FullName). Error: $($_.Exception.Message)" -ForegroundColor Red
+      }
     }
   }
 }
